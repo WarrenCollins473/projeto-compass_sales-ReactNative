@@ -1,12 +1,6 @@
 import React, { useState } from "react";
-import {
-  View,
-  StyleSheet,
-  StatusBar,
-  TouchableOpacity,
-  Text,
-} from "react-native";
-import { FIREBASE_AUTH } from "../../FirebaseConfig";
+import { View, StyleSheet, StatusBar, Text } from "react-native";
+import { auth } from "../../FirebaseConfig";
 import { Title } from "../components/title";
 import { Colors } from "../colors/colors";
 import { TextInput } from "react-native-gesture-handler";
@@ -17,26 +11,23 @@ const statusBarHeight = StatusBar.currentHeight;
 
 export function PasswordRecovery() {
   const [email, setEmail] = useState("");
-  const [showErros, setShowErros] = useState(false);
+  const [showError, setShowError] = useState(false);
   const [erro, setErro] = useState("");
 
   async function sendEmail() {
     if (!email) {
       setErro("Please Enter Email");
-      setShowErros(true);
+      setShowError(true);
     } else if (!email.includes("@") || !email.includes(".com")) {
       setErro("Please Valid Email");
-      setShowErros(true);
+      setShowError(true);
     } else {
       try {
-        const auth = FIREBASE_AUTH;
         await sendPasswordResetEmail(auth, email);
         alert("verify you emailbox!");
       } catch (error) {
         setErro(error.message);
-        setShowErros(true);
-
-        console.log(error);
+        setShowError(true);
       }
     }
   }
@@ -49,13 +40,13 @@ export function PasswordRecovery() {
         new password via email.
       </Text>
       <TextInput
-        style={styles.input}
+        style={showError ? styles.inputError : styles.input}
         value={email}
         placeholder="Email"
         autoCapitalize="none"
         onChangeText={(Text) => setEmail(Text)}
       ></TextInput>
-      {showErros && <Text style={styles.error}>{erro}</Text>}
+      {showError && <Text style={styles.error}>{erro}</Text>}
       <Button title={"SEND"} onPress={sendEmail} />
     </View>
   );
@@ -65,7 +56,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
     backgroundColor: Colors.BACKGROUND_COLOR,
-    justifyContent: "center",
+    justifyContent: "flex-start",
   },
   input: {
     marginVertical: 4,
@@ -82,6 +73,16 @@ const styles = StyleSheet.create({
   },
   error: {
     color: "red",
+    marginHorizontal: 30,
+  },
+  inputError: {
+    borderColor: "red",
+    borderWidth: 1,
+    marginVertical: 4,
+    height: 64,
+    borderRadius: 4,
+    padding: 10,
+    backgroundColor: "white",
     marginHorizontal: 16,
   },
 });

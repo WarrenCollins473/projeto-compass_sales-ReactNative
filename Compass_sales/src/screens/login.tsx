@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { View, StyleSheet, StatusBar, Text } from "react-native";
-import { FIREBASE_AUTH } from "../../FirebaseConfig";
+import { auth } from "../../FirebaseConfig";
 import { Title } from "../components/title";
 import { Colors } from "../colors/colors";
 import { TextInput } from "react-native-gesture-handler";
-import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { Button } from "../components/button";
 import { Links } from "../components/link";
 
@@ -17,15 +17,6 @@ export function Login({ navigation }) {
   const [showErroPassword, setShowErrorPassword] = useState(false);
   const [ErrorPassword, setErrorPassword] = useState("");
   const [ErrorEmail, setErrorEmail] = useState("");
-  const auth = FIREBASE_AUTH;
-
-  // useEffect(() => {
-  //   onAuthStateChanged(auth, (user) => {
-  //     if (user) {
-  //       navigation.navigate("mainPage");
-  //     }
-  //   });
-  // });
 
   async function singIn() {
     try {
@@ -45,7 +36,6 @@ export function Login({ navigation }) {
         setErrorEmail("Invalid email");
         setShowErroEmail(true);
       }
-      console.log(error.message);
     }
   }
 
@@ -53,7 +43,7 @@ export function Login({ navigation }) {
     <View style={styles.container}>
       <Title title={"Login"} />
       <TextInput
-        style={styles.input}
+        style={showErroEmail ? styles.inputError : styles.input}
         value={email}
         placeholder="Email"
         autoCapitalize="none"
@@ -61,7 +51,7 @@ export function Login({ navigation }) {
       ></TextInput>
       {showErroEmail && <Text style={styles.error}>{ErrorEmail}</Text>}
       <TextInput
-        style={styles.input}
+        style={showErroPassword ? styles.inputError : styles.input}
         value={password}
         placeholder="Password"
         autoCapitalize="none"
@@ -86,7 +76,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
     backgroundColor: Colors.BACKGROUND_COLOR,
-    justifyContent: "center",
+    justifyContent: "flex-start",
     marginTop: statusBarHeight,
   },
   input: {
@@ -99,6 +89,16 @@ const styles = StyleSheet.create({
   },
   error: {
     color: "red",
+    marginHorizontal: 30,
+  },
+  inputError: {
+    borderColor: "red",
+    borderWidth: 1,
+    marginVertical: 4,
+    height: 64,
+    borderRadius: 4,
+    padding: 10,
+    backgroundColor: "white",
     marginHorizontal: 16,
   },
 });

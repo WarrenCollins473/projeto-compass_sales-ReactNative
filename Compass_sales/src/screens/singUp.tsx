@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { View, StyleSheet, StatusBar, TextInput, Text } from "react-native";
-import { FIREBASE_AUTH } from "../../FirebaseConfig";
+import { auth } from "../../FirebaseConfig";
 import { Title } from "../components/title";
 import { Colors } from "../colors/colors";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { Button } from "../components/button";
 import { Links } from "../components/link";
 
@@ -19,7 +19,6 @@ export function SingUp({ navigation }) {
   const [showErroPassword, setShowErrorPassword] = useState(false);
   const [errorPassword, setErrorPassword] = useState("");
   const [errorEmail, setErrorEmail] = useState("");
-  const auth = FIREBASE_AUTH;
 
   async function singUp() {
     if (name.length == 0) {
@@ -41,10 +40,15 @@ export function SingUp({ navigation }) {
           email,
           password
         );
-        alert("check your emails!");
+        alert("Registration success!");
+        navigation.navigate("login");
       } catch (error) {
-        console.log(error);
         alert("Registration failed: " + error.code);
+      }
+      try {
+        await updateProfile(auth.currentUser, { displayName: name });
+      } catch (error) {
+        alert(error.message);
       }
     }
   }
@@ -53,7 +57,7 @@ export function SingUp({ navigation }) {
     <View style={styles.container}>
       <Title title={"Sing Up"} />
       <TextInput
-        style={styles.input}
+        style={showErroName ? styles.inputError : styles.input}
         value={name}
         placeholder="Name"
         autoCapitalize="none"
@@ -61,7 +65,7 @@ export function SingUp({ navigation }) {
       ></TextInput>
       {showErroName && <Text style={styles.error}>{errorName}</Text>}
       <TextInput
-        style={styles.input}
+        style={showErroEmail ? styles.inputError : styles.input}
         value={email}
         placeholder="Email"
         autoCapitalize="none"
@@ -69,7 +73,7 @@ export function SingUp({ navigation }) {
       ></TextInput>
       {showErroEmail && <Text style={styles.error}>{errorEmail}</Text>}
       <TextInput
-        style={styles.input}
+        style={showErroPassword ? styles.inputError : styles.input}
         value={password}
         placeholder="Password"
         autoCapitalize="none"
@@ -79,7 +83,7 @@ export function SingUp({ navigation }) {
       {showErroPassword && <Text style={styles.error}>{errorPassword}</Text>}
       <Links
         title={"Already have an account?"}
-        onPress={navigation.goBack}
+        onPress={() => navigation.navigate("login")}
       ></Links>
       <Button title={"SING UP"} onPress={singUp}></Button>
     </View>
@@ -90,7 +94,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
     backgroundColor: Colors.BACKGROUND_COLOR,
-    justifyContent: "center",
+    justifyContent: "flex-start",
   },
   input: {
     marginVertical: 4,
@@ -102,6 +106,16 @@ const styles = StyleSheet.create({
   },
   error: {
     color: "red",
+    marginHorizontal: 30,
+  },
+  inputError: {
+    borderColor: "red",
+    borderWidth: 1,
+    marginVertical: 4,
+    height: 64,
+    borderRadius: 4,
+    padding: 10,
+    backgroundColor: "white",
     marginHorizontal: 16,
   },
 });

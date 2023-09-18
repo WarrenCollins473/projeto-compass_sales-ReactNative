@@ -12,6 +12,8 @@ export function Button({ title, onPress }) {
 const styles = StyleSheet.create({
   container: {
     margin: 14,
+    marginTop: 30,
+    marginBottom: 30,
     backgroundColor: Colors.BUTTON_COLOR,
     height: 48,
     borderRadius: 25,
