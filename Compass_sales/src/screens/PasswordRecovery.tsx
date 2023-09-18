@@ -15,13 +15,8 @@ export function PasswordRecovery() {
   const [erro, setErro] = useState("");
 
   async function sendEmail() {
-    if (!email) {
-      setErro("Please Enter Email");
-      setShowError(true);
-    } else if (!email.includes("@") || !email.includes(".com")) {
-      setErro("Please Valid Email");
-      setShowError(true);
-    } else {
+    if (!validate()) {
+      setShowError(false);
       try {
         await sendPasswordResetEmail(auth, email);
         alert("verify you emailbox!");
@@ -31,7 +26,24 @@ export function PasswordRecovery() {
       }
     }
   }
-
+  function validate() {
+    let erro = false;
+    if (!email) {
+      setErro("Please Enter Email");
+      setShowError(true);
+      erro = true;
+    }
+    if (!email.includes("@") || !email.includes(".com")) {
+      setErro("Please Valid Email");
+      setShowError(true);
+      erro = true;
+    }
+    return erro;
+  }
+  function handleOnChangeEmail(email) {
+    setEmail(email);
+    setShowError(false);
+  }
   return (
     <View style={styles.container}>
       <Title title={"Forgot password"} />
@@ -44,7 +56,7 @@ export function PasswordRecovery() {
         value={email}
         placeholder="Email"
         autoCapitalize="none"
-        onChangeText={(Text) => setEmail(Text)}
+        onChangeText={handleOnChangeEmail}
       ></TextInput>
       {showError && <Text style={styles.error}>{erro}</Text>}
       <Button title={"SEND"} onPress={sendEmail} />
@@ -65,6 +77,7 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: "white",
     marginHorizontal: 16,
+    elevation: 4,
   },
   message: {
     fontSize: 14,
@@ -84,5 +97,6 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: "white",
     marginHorizontal: 16,
+    elevation: 4,
   },
 });

@@ -1,13 +1,11 @@
 import React, { useState } from "react";
-import { View, StyleSheet, StatusBar, TextInput, Text } from "react-native";
+import { View, StyleSheet, TextInput, Text } from "react-native";
 import { auth } from "../../FirebaseConfig";
 import { Title } from "../components/title";
 import { Colors } from "../colors/colors";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { Button } from "../components/button";
 import { Links } from "../components/link";
-
-const statusBarHeight = StatusBar.currentHeight;
 
 export function SingUp({ navigation }) {
   const [email, setEmail] = useState("");
@@ -21,47 +19,74 @@ export function SingUp({ navigation }) {
   const [errorEmail, setErrorEmail] = useState("");
 
   async function singUp() {
-    if (name.length == 0) {
-      setErroName("Name can not be empty");
-      setShowErroName(true);
-    } else if (!email) {
-      setErrorEmail("Please Enter Email");
-      setShowErroEmail(true);
-    } else if (!email.includes("@") || !email.includes(".com")) {
-      setErrorEmail("Please Valid Email");
-      setShowErroEmail(true);
-    } else if (password.length < 6) {
-      setErrorPassword("Password has to be at least 6 character");
-      setShowErrorPassword(true);
-    } else {
+    if (!validate()) {
       try {
         const response = await createUserWithEmailAndPassword(
           auth,
           email,
           password
         );
+        updateProfile(response.user, { displayName: name });
+        auth.signOut();
         alert("Registration success!");
         navigation.navigate("login");
       } catch (error) {
-        alert("Registration failed: " + error.code);
-      }
-      try {
-        await updateProfile(auth.currentUser, { displayName: name });
-      } catch (error) {
-        alert(error.message);
+        if (error.code == "auth/email-already-in-use") {
+          alert("Registration failed! Email already in use.");
+        }
       }
     }
   }
 
+  function validate() {
+    let erro = false;
+    if (name.length == 0) {
+      setErroName("Name can not be empty");
+      setShowErroName(true);
+    }
+    if (!email) {
+      setErrorEmail("Please Enter Email");
+      setShowErroEmail(true);
+      erro = true;
+    }
+    if (
+      !email.includes("@") ||
+      !email.includes(".com") ||
+      email.includes(" ")
+    ) {
+      setErrorEmail("Please Valid Email");
+      setShowErroEmail(true);
+      erro = true;
+    }
+    if (password.length < 6) {
+      setErrorPassword("Password has to be at least 6 character");
+      setShowErrorPassword(true);
+    }
+
+    return erro;
+  }
+
+  function handleOnChangeEmail(email) {
+    setEmail(email);
+    setShowErroEmail(false);
+  }
+  function handleOnChangePassword(password) {
+    setPassword(password);
+    setShowErrorPassword(false);
+  }
+  function handleOnChangeName(name) {
+    setName(name);
+    setShowErroName(false);
+  }
   return (
     <View style={styles.container}>
-      <Title title={"Sing Up"} />
+      <Title title={"Sign Up"} />
       <TextInput
         style={showErroName ? styles.inputError : styles.input}
         value={name}
         placeholder="Name"
         autoCapitalize="none"
-        onChangeText={(Text) => setName(Text)}
+        onChangeText={handleOnChangeName}
       ></TextInput>
       {showErroName && <Text style={styles.error}>{errorName}</Text>}
       <TextInput
@@ -69,7 +94,7 @@ export function SingUp({ navigation }) {
         value={email}
         placeholder="Email"
         autoCapitalize="none"
-        onChangeText={(Text) => setEmail(Text)}
+        onChangeText={handleOnChangeEmail}
       ></TextInput>
       {showErroEmail && <Text style={styles.error}>{errorEmail}</Text>}
       <TextInput
@@ -78,7 +103,7 @@ export function SingUp({ navigation }) {
         placeholder="Password"
         autoCapitalize="none"
         secureTextEntry={true}
-        onChangeText={(Text) => setPassword(Text)}
+        onChangeText={handleOnChangePassword}
       ></TextInput>
       {showErroPassword && <Text style={styles.error}>{errorPassword}</Text>}
       <Links
@@ -103,6 +128,7 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: "white",
     marginHorizontal: 16,
+    elevation: 4,
   },
   error: {
     color: "red",
@@ -117,5 +143,6 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: "white",
     marginHorizontal: 16,
+    elevation: 4,
   },
 });

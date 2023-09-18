@@ -15,6 +15,7 @@ const styles = StyleSheet.create({
   links: {
     alignItems: "center",
     marginHorizontal: 14,
+    marginTop: 8,
     flexDirection: "row",
     justifyContent: "flex-end",
     backgroundColor: Colors.BACKGROUND_COLOR,
