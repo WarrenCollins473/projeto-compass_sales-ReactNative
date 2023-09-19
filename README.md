@@ -4,12 +4,14 @@ This project is the development of an authentication module for an sales applica
 
 how to install dependences and run this project:
 
-open on Compass_sales folder on terminal and run commands:
-
-npm install
-npx expo
+run command: npx create-expo-app project_name
+Then copy all the files from the Compass_Sales folder and paste into the created project folder and replace them.
+run command: cd project_name
+run command: npm install
+run command: npx expo
 Press a │ to open Android emulator or download expoGo on your smartphone and read the QR code
 
+# Project dependencies
 react-native-async-storage/async-storage 1.18.2
 react-native-firebase/app 18.4.0
 react-native-firebase/auth 18.4.0
