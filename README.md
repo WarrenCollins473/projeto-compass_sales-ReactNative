@@ -4,6 +4,7 @@ This project is the development of an authentication module for an sales applica
 
 how to install dependences and run this project:<br>
 
+install Node.js<br>
 run command: npx create-expo-app project_name<br>
 Then copy all the files from the Compass_Sales folder and paste into the created project folder and replace them.<br>
 run command: cd project_name<br>
